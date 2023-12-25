@@ -31,15 +31,19 @@ public class User implements Serializable {
     @Column(name = "email", nullable = false, unique = true)
     private String email;
 
+    @Column(name = "profile_url")
+    private String profileUrl;
+
     public User() { }
 
-    public User(long id, String username, String password, String pronoun, String name, String email) {
+    public User(long id, String username, String password, String pronoun, String name, String email, String profileUrl) {
         this.id = id;
         this.username = username;
         this.password = password;
         this.pronoun = pronoun;
         this.name = name;
         this.email = email;
+        this.profileUrl = profileUrl;
     }
 
     public long getId() {
@@ -90,18 +94,25 @@ public class User implements Serializable {
         this.email = email;
     }
 
+    public String getProfileUrl() {
+        return profileUrl;
+    }
+
+    public void setProfileUrl(String profileUrl) {
+        this.profileUrl = profileUrl;
+    }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         User user = (User) o;
-        return Objects.equals(id, user.id) && Objects.equals(username, user.username) && Objects.equals(password, user.password) && Objects.equals(pronoun, user.pronoun) && Objects.equals(name, user.name) && Objects.equals(email, user.email);
+        return Objects.equals(id, user.id) && Objects.equals(username, user.username) && Objects.equals(password, user.password) && Objects.equals(pronoun, user.pronoun) && Objects.equals(name, user.name) && Objects.equals(email, user.email) && Objects.equals(profileUrl, user.profileUrl);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, username, password, pronoun, name, email);
+        return Objects.hash(id, username, password, pronoun, name, email, profileUrl);
     }
 
     @Override
@@ -113,6 +124,7 @@ public class User implements Serializable {
                 ", pronoun='" + pronoun + '\'' +
                 ", name='" + name + '\'' +
                 ", email='" + email + '\'' +
+                ", profileUrl='" + profileUrl + '\'' +
                 '}';
     }
 
