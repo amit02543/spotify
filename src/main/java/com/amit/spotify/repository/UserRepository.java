@@ -15,7 +15,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
     @Query(value = "SELECT * FROM user u WHERE u.username = :username", nativeQuery = true)
     Optional<User> findByUsername(@Param("username") String username);
 
-    @Modifying
+    @Modifying(clearAutomatically = true)
     @Query(value = "UPDATE user u SET u.name = :name, u.pronoun = :pronoun, u.email = :email WHERE u.username = :username", nativeQuery = true)
     void updateUserByUsername(@Param("username") String username, @Param("name") String name, @Param("pronoun") String pronoun, @Param("email") String email);
 
