@@ -1,7 +1,9 @@
 package com.amit.spotify.controller;
 
 import com.amit.spotify.exception.SpotifyException;
+import com.amit.spotify.model.SearchResult;
 import com.amit.spotify.service.SpotifyService;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONObject;
@@ -27,7 +29,7 @@ public class SpotifyController {
 
 
     @Autowired
-    private ObjectMapper mapper;
+    private ObjectMapper objectMapper;
 
 
     @RequestMapping(
@@ -41,13 +43,9 @@ public class SpotifyController {
 
         try {
 
-            spotifyService.searchByTermAndType(query, type);
+            SearchResult searchResult = spotifyService.searchByTermAndType(query, type);
 
-            JSONObject responseObject = new JSONObject();
-            responseObject.put("message", "User is register successfully");
-            responseObject.put("statusCode", HttpStatus.OK.value());
-
-            return new ResponseEntity<>(responseObject.toString(), HttpStatus.OK);
+            return new ResponseEntity<>(objectMapper.writeValueAsString(searchResult), HttpStatus.OK);
         } catch(SpotifyException e) {
 
             JSONObject errorJsonObject = new JSONObject();
@@ -55,7 +53,15 @@ public class SpotifyController {
             errorJsonObject.put("statusCode", e.getStatusCode().value());
 
             return new ResponseEntity<>(errorJsonObject.toString(), e.getStatusCode());
+        } catch (JsonProcessingException e) {
+
+            JSONObject errorJsonObject = new JSONObject();
+            errorJsonObject.put("message", "Something went wrong!");
+            errorJsonObject.put("statusCode", HttpStatus.INTERNAL_SERVER_ERROR.value());
+
+            return new ResponseEntity<>(errorJsonObject.toString(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
+
 
     }
 
