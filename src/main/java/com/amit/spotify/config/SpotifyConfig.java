@@ -34,6 +34,7 @@ public class SpotifyConfig {
     private String clientId;
     private String clientSecret;
     private String tokenUrl;
+    private String baseUrl;
     private String searchUrl;
     private String artistUrl;
 

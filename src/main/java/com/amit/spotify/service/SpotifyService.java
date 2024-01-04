@@ -6,4 +6,8 @@ public interface SpotifyService {
 
     SearchResult searchByTermAndType(String query, String type);
 
+    SearchResult fetchLatestAlbums();
+
+    SearchResult fetchRandomTracks();
+
 }

@@ -106,4 +106,78 @@ public class SpotifyServiceImpl implements SpotifyService {
     }
 
 
+    @Override
+    public SearchResult fetchLatestAlbums() {
+
+        String accessToken = spotifyConfig.getAccessToken();
+        log.info("Access Token: {}", accessToken);
+
+        String formattedNewReleaseUrl = String.format(spotifyConfig.getBaseUrl() + "browse/new-releases");
+        log.info("Formatted URL: {}", formattedNewReleaseUrl);
+
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setBearerAuth(accessToken);
+
+        ResponseEntity<String> responseEntity;
+
+        try {
+            responseEntity = restTemplate.exchange(formattedNewReleaseUrl, HttpMethod.GET, new HttpEntity<>(headers), String.class);
+            log.info("Formatted New Release Response Entity: {}", responseEntity);
+        } catch(RestClientException e) {
+            log.error("Exception occurred while calling search URL: {}", e.getMessage());
+            throw new SpotifyException("Exception occurred while calling search URL", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+
+        if(HttpStatus.UNAUTHORIZED.equals(responseEntity.getStatusCode())) {
+            throw new SpotifyException("Not authorized for search query", HttpStatus.UNAUTHORIZED);
+        } else if(HttpStatus.FORBIDDEN.equals(responseEntity.getStatusCode())) {
+            throw new SpotifyException("Bad OAuth request for search query", HttpStatus.FORBIDDEN);
+        } else if(HttpStatus.TOO_MANY_REQUESTS.equals(responseEntity.getStatusCode())) {
+            throw new SpotifyException("User has exceeded rate limits", HttpStatus.TOO_MANY_REQUESTS);
+        }
+
+
+        if(null == responseEntity.getBody()) {
+            throw new SpotifyException("Search result response is null", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+
+        JSONObject resultJsonObject = new JSONObject(responseEntity.getBody());
+        JSONArray itemsArray = resultJsonObject.getJSONObject("albums").getJSONArray(CommonConstants.ITEMS);
+
+
+        return searchUtil.formatSearchResult(itemsArray, CommonConstants.ALBUM);
+    }
+
+
+    @Override
+    public SearchResult fetchRandomTracks() {
+
+        String query = getRandomSearchTerm();
+
+        String type = CommonConstants.TRACK;
+
+
+        return searchByTermAndType(query, type);
+    }
+
+
+    private String getRandomSearchTerm() {
+
+        String characters = "abcdefghijklmnopqrstuvwxyz";
+
+        String randomCharacter = Character.toString(characters.charAt((int) Math.floor(Math.random() * characters.length())));
+
+
+        return switch ((int) Math.round(Math.random())) {
+            case 0 -> randomCharacter + '%';
+            case 1 -> '%' + randomCharacter + '%';
+            default -> CommonConstants.EMPTY_STR;
+        };
+
+    }
+
+
 }

@@ -66,6 +66,70 @@ public class SpotifyController {
     }
 
 
+    @RequestMapping(
+            value = "/latest",
+            method = RequestMethod.GET,
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    public ResponseEntity<String> fetchLatestAlbums() {
+
+        try {
+
+            SearchResult searchResult = spotifyService.fetchLatestAlbums();
+
+            return new ResponseEntity<>(objectMapper.writeValueAsString(searchResult), HttpStatus.OK);
+        } catch(SpotifyException e) {
+
+            JSONObject errorJsonObject = new JSONObject();
+            errorJsonObject.put("message", e.getMessage());
+            errorJsonObject.put("statusCode", e.getStatusCode().value());
+
+            return new ResponseEntity<>(errorJsonObject.toString(), e.getStatusCode());
+        } catch (JsonProcessingException e) {
+
+            JSONObject errorJsonObject = new JSONObject();
+            errorJsonObject.put("message", "Something went wrong!");
+            errorJsonObject.put("statusCode", HttpStatus.INTERNAL_SERVER_ERROR.value());
+
+            return new ResponseEntity<>(errorJsonObject.toString(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+
+    }
+
+
+    @RequestMapping(
+            value = "/random",
+            method = RequestMethod.GET,
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    public ResponseEntity<String> fetchRandomTracks() {
+
+        try {
+
+            SearchResult searchResult = spotifyService.fetchRandomTracks();
+
+            return new ResponseEntity<>(objectMapper.writeValueAsString(searchResult), HttpStatus.OK);
+        } catch(SpotifyException e) {
+
+            JSONObject errorJsonObject = new JSONObject();
+            errorJsonObject.put("message", e.getMessage());
+            errorJsonObject.put("statusCode", e.getStatusCode().value());
+
+            return new ResponseEntity<>(errorJsonObject.toString(), e.getStatusCode());
+        } catch (JsonProcessingException e) {
+
+            JSONObject errorJsonObject = new JSONObject();
+            errorJsonObject.put("message", "Something went wrong!");
+            errorJsonObject.put("statusCode", HttpStatus.INTERNAL_SERVER_ERROR.value());
+
+            return new ResponseEntity<>(errorJsonObject.toString(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+
+    }
+
+
 
 
 
