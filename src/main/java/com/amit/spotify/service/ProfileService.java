@@ -12,4 +12,8 @@ public interface ProfileService {
 
     UserDto uploadProfileImageByUsername(String username, MultipartFile file);
 
+    UserDto saveProfileImageToDatabaseByUsername(String username, MultipartFile file);
+
+    byte[] fetchProfileImageByUsername(String username);
+
 }

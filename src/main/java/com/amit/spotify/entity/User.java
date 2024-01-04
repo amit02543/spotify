@@ -34,9 +34,14 @@ public class User implements Serializable {
     @Column(name = "profile_url")
     private String profileUrl;
 
+    @Lob
+    @Column(name = "profile_image", columnDefinition = "MEDIUMBLOB")
+    private String profileImage;
+
     public User() { }
 
-    public User(long id, String username, String password, String pronoun, String name, String email, String profileUrl) {
+    public User(long id, String username, String password, String pronoun, String name, String email,
+                String profileUrl, String profileImage) {
         this.id = id;
         this.username = username;
         this.password = password;
@@ -44,6 +49,7 @@ public class User implements Serializable {
         this.name = name;
         this.email = email;
         this.profileUrl = profileUrl;
+        this.profileImage = profileImage;
     }
 
     public long getId() {
@@ -102,18 +108,27 @@ public class User implements Serializable {
         this.profileUrl = profileUrl;
     }
 
+    public String getProfileImage() {
+        return profileImage;
+    }
+
+    public void setProfileImage(String profileImage) {
+        this.profileImage = profileImage;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         User user = (User) o;
-        return Objects.equals(id, user.id) && Objects.equals(username, user.username) && Objects.equals(password, user.password) && Objects.equals(pronoun, user.pronoun) && Objects.equals(name, user.name) && Objects.equals(email, user.email) && Objects.equals(profileUrl, user.profileUrl);
+        return Objects.equals(id, user.id) && Objects.equals(username, user.username) && Objects.equals(password, user.password) && Objects.equals(pronoun, user.pronoun) && Objects.equals(name, user.name) && Objects.equals(email, user.email) && Objects.equals(profileUrl, user.profileUrl) && Objects.equals(profileImage, user.profileImage);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, username, password, pronoun, name, email, profileUrl);
+        return Objects.hash(id, username, password, pronoun, name, email, profileUrl, profileImage);
     }
+
 
     @Override
     public String toString() {
@@ -125,6 +140,7 @@ public class User implements Serializable {
                 ", name='" + name + '\'' +
                 ", email='" + email + '\'' +
                 ", profileUrl='" + profileUrl + '\'' +
+                ", profileImage='" + profileImage + '\'' +
                 '}';
     }
 

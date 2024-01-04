@@ -26,6 +26,7 @@ import java.time.Clock;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.Base64;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -220,6 +221,62 @@ public class ProfileServiceImpl implements ProfileService {
         //TODO: Fetch user details and send back to user
 
         return fetchRefreshedUser(username);
+    }
+
+
+    @Override
+    public UserDto saveProfileImageToDatabaseByUsername(String username, MultipartFile file) {
+
+        if(null == username) {
+            throw new SpotifyException("Username is required", HttpStatus.BAD_REQUEST);
+        } else if(CommonConstants.EMPTY_STR.equals(username.trim())) {
+            throw new SpotifyException("Username can not be empty", HttpStatus.BAD_REQUEST);
+        }
+
+
+        Optional<User> optionalUser = userRepository.findByUsername(username);
+
+        if(optionalUser.isEmpty()) {
+            throw new SpotifyException("No user found for username: " + username, HttpStatus.UNPROCESSABLE_ENTITY);
+        }
+
+
+        User existingUser = optionalUser.get();
+
+        try {
+
+            existingUser.setProfileImage(Base64.getEncoder().encodeToString(file.getBytes()));
+            userRepository.save(existingUser);
+
+        } catch (IOException e) {
+            throw new SpotifyException("Unable to save image to database", HttpStatus.BAD_REQUEST);
+        }
+
+
+        return fetchRefreshedUser(username);
+    }
+
+
+    @Override
+    public byte[] fetchProfileImageByUsername(String username) {
+
+        if(null == username) {
+            throw new SpotifyException("Username is required", HttpStatus.BAD_REQUEST);
+        } else if(CommonConstants.EMPTY_STR.equals(username.trim())) {
+            throw new SpotifyException("Username can not be empty", HttpStatus.BAD_REQUEST);
+        }
+
+
+        Optional<User> optionalUser = userRepository.findByUsername(username);
+
+        if(optionalUser.isEmpty()) {
+            throw new SpotifyException("No user found for username: " + username, HttpStatus.UNPROCESSABLE_ENTITY);
+        }
+
+
+        User existingUser = optionalUser.get();
+
+        return Base64.getDecoder().decode(existingUser.getProfileImage());
     }
 
 

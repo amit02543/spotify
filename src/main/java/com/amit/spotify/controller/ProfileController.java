@@ -9,6 +9,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -128,6 +129,71 @@ public class ProfileController {
 
             return new ResponseEntity<>(errorJsonObject.toString(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
+
+    }
+
+
+    @RequestMapping(
+            value = "/{username}/upload-image-2",
+            method = RequestMethod.POST,
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    public ResponseEntity<String> saveProfileImageToDatabaseByUsername(@PathVariable String username, @RequestParam("image") MultipartFile file) throws IOException {
+        log.info("Updating profile for username: {} -> {}", username, file);
+        log.info("Upload image name: {}", file.getName());
+        log.info("Upload image filename: {}", file.getOriginalFilename());
+        log.info("Upload image content type: {}", file.getContentType());
+        log.info("Upload image size: {}", file.getSize());
+
+        try {
+
+            UserDto userDto = profileService.saveProfileImageToDatabaseByUsername(username, file);
+
+            return new ResponseEntity<>(objectMapper.writeValueAsString(userDto), HttpStatus.OK);
+        } catch(SpotifyException e) {
+
+            JSONObject errorJsonObject = new JSONObject();
+            errorJsonObject.put("message", e.getMessage());
+            errorJsonObject.put("statusCode", e.getStatusCode().value());
+
+            return new ResponseEntity<>(errorJsonObject.toString(), e.getStatusCode());
+        } catch (JsonProcessingException e) {
+
+            JSONObject errorJsonObject = new JSONObject();
+            errorJsonObject.put("message", "Something went wrong!");
+            errorJsonObject.put("statusCode", HttpStatus.INTERNAL_SERVER_ERROR.value());
+
+            return new ResponseEntity<>(errorJsonObject.toString(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+    }
+
+
+    @RequestMapping(
+            value = "/{username}/profile-image",
+            method = RequestMethod.GET,
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    public ResponseEntity<byte[]> fetchProfileImageByUsername(@PathVariable String username) {
+        log.info("Fetching profile image for username: {}", username);
+
+        try {
+
+            byte[] imageBytes = profileService.fetchProfileImageByUsername(username);
+
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.IMAGE_JPEG);
+
+            return new ResponseEntity<>(imageBytes, headers, HttpStatus.OK);
+        } catch(SpotifyException e) {
+
+            JSONObject errorJsonObject = new JSONObject();
+            errorJsonObject.put("message", e.getMessage());
+            errorJsonObject.put("statusCode", e.getStatusCode().value());
+
+            return new ResponseEntity<>(new byte[0], e.getStatusCode());
+        }
+
 
     }
 
