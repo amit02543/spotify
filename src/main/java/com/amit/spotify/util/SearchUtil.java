@@ -20,9 +20,6 @@ public class SearchUtil {
 
         SearchResult searchResult = new SearchResult();
 
-        /*JSONObject resultObject = new JSONObject(result);
-        JSONArray itemsArray = resultObject.getJSONArray(CommonConstants.ITEMS);*/
-
         for(int i = 0; i < itemsArray.length(); i++) {
 
             JSONObject jsonObject = itemsArray.getJSONObject(i);
@@ -119,14 +116,11 @@ public class SearchUtil {
 
     private String extractImageUrlFromImages(JSONArray imagesJsonArray) {
 
-        String url = CommonConstants.EMPTY_STR;
-
-        for(int i = 0; i < imagesJsonArray.length(); i++) {
-            url = imagesJsonArray.getJSONObject(i).getString("url");
+        if(!imagesJsonArray.isEmpty()) {
+            return imagesJsonArray.getJSONObject(0).getString("url");
         }
 
-
-        return url;
+        return CommonConstants.EMPTY_STR;
     }
 
 
