@@ -3,6 +3,7 @@ package com.amit.spotify.entity;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.Objects;
 
@@ -10,6 +11,7 @@ import java.util.Objects;
 @Table(name = "user")
 public class User implements Serializable {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     @Id
