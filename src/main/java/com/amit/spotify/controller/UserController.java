@@ -1,5 +1,6 @@
 package com.amit.spotify.controller;
 
+import com.amit.spotify.dto.CollectionDto;
 import com.amit.spotify.dto.UserCollectionDto;
 import com.amit.spotify.entity.UserCollection;
 import com.amit.spotify.entity.UserSong;
@@ -39,7 +40,7 @@ public class UserController {
             produces = MediaType.APPLICATION_JSON_VALUE
     )
     public ResponseEntity<String> fetchCollectionsByUsername(@PathVariable String username) {
-        log.info("Fetching profile for username: {}", username);
+        log.info("Fetching collection list for username: {}", username);
 
         try {
 
@@ -73,11 +74,45 @@ public class UserController {
     public ResponseEntity<String> addCollectionsByUsername(
             @PathVariable String username,
             @RequestBody UserCollectionDto userCollectionDto) {
-        log.info("Fetching profile for username: {}", username);
+        log.info("Adding collection for username: {}", username);
 
         try {
 
             List<UserCollection> userCollectionList = userService.addCollectionsByUsername(userCollectionDto);
+
+            return new ResponseEntity<>(objectMapper.writeValueAsString(userCollectionList), HttpStatus.OK);
+        } catch(SpotifyException e) {
+
+            JSONObject errorJsonObject = new JSONObject();
+            errorJsonObject.put("message", e.getMessage());
+            errorJsonObject.put("statusCode", e.getStatusCode().value());
+
+            return new ResponseEntity<>(errorJsonObject.toString(), e.getStatusCode());
+        } catch (JsonProcessingException e) {
+
+            JSONObject errorJsonObject = new JSONObject();
+            errorJsonObject.put("message", "Something went wrong!");
+            errorJsonObject.put("statusCode", HttpStatus.INTERNAL_SERVER_ERROR.value());
+
+            return new ResponseEntity<>(errorJsonObject.toString(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+    }
+
+
+    @RequestMapping(
+            value = "/{username}/collections/{collectionName}",
+            method = RequestMethod.GET,
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    public ResponseEntity<String> fetchCollectionsByUsernameAndName(
+            @PathVariable String username,
+            @PathVariable String collectionName) {
+        log.info("Fetching {} collection details for username: {}", collectionName, username);
+
+        try {
+
+            List<CollectionDto> userCollectionList = userService.fetchCollectionsByUsernameAndName(username, collectionName);
 
             return new ResponseEntity<>(objectMapper.writeValueAsString(userCollectionList), HttpStatus.OK);
         } catch(SpotifyException e) {
