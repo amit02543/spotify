@@ -16,6 +16,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.List;
@@ -115,6 +116,79 @@ public class UserController {
             List<CollectionDto> userCollectionList = userService.fetchCollectionsByUsernameAndName(username, collectionName);
 
             return new ResponseEntity<>(objectMapper.writeValueAsString(userCollectionList), HttpStatus.OK);
+        } catch(SpotifyException e) {
+
+            JSONObject errorJsonObject = new JSONObject();
+            errorJsonObject.put("message", e.getMessage());
+            errorJsonObject.put("statusCode", e.getStatusCode().value());
+
+            return new ResponseEntity<>(errorJsonObject.toString(), e.getStatusCode());
+        } catch (JsonProcessingException e) {
+
+            JSONObject errorJsonObject = new JSONObject();
+            errorJsonObject.put("message", "Something went wrong!");
+            errorJsonObject.put("statusCode", HttpStatus.INTERNAL_SERVER_ERROR.value());
+
+            return new ResponseEntity<>(errorJsonObject.toString(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+    }
+
+
+    @RequestMapping(
+            value = "/{username}/collections/{collectionName}/details",
+            method = RequestMethod.GET,
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    public ResponseEntity<String> fetchCollectionDetailsByUsernameAndName(
+            @PathVariable String username,
+            @PathVariable String collectionName) {
+        log.info("Fetching {} collection details for username: {}", collectionName, username);
+
+        try {
+
+            UserCollection userCollection = userService.fetchCollectionDetailsByUsernameAndName(username, collectionName);
+
+            return new ResponseEntity<>(objectMapper.writeValueAsString(userCollection), HttpStatus.OK);
+        } catch(SpotifyException e) {
+
+            JSONObject errorJsonObject = new JSONObject();
+            errorJsonObject.put("message", e.getMessage());
+            errorJsonObject.put("statusCode", e.getStatusCode().value());
+
+            return new ResponseEntity<>(errorJsonObject.toString(), e.getStatusCode());
+        } catch (JsonProcessingException e) {
+
+            JSONObject errorJsonObject = new JSONObject();
+            errorJsonObject.put("message", "Something went wrong!");
+            errorJsonObject.put("statusCode", HttpStatus.INTERNAL_SERVER_ERROR.value());
+
+            return new ResponseEntity<>(errorJsonObject.toString(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+    }
+
+
+    @RequestMapping(
+            value = "/{username}/collections/{collectionName}/upload",
+            method = RequestMethod.POST,
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    public ResponseEntity<String> uploadCollectionImageByUsernameAndName(
+            @PathVariable String username,
+            @PathVariable String collectionName,
+            @RequestParam("image") MultipartFile file) {
+        log.info("uploading image on {} collection for username: {}", collectionName, username);
+        log.info("Upload image name: {}", file.getName());
+        log.info("Upload image filename: {}", file.getOriginalFilename());
+        log.info("Upload image content type: {}", file.getContentType()); 
+        log.info("Upload image size: {}", file.getSize());
+
+        try {
+
+            UserCollection userCollection = userService.uploadCollectionImageByUsernameAndName(username, collectionName, file);
+
+            return new ResponseEntity<>(objectMapper.writeValueAsString(userCollection), HttpStatus.OK);
         } catch(SpotifyException e) {
 
             JSONObject errorJsonObject = new JSONObject();
