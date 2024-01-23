@@ -55,7 +55,7 @@ public class CollectionServiceImpl implements CollectionService {
         collection.setName(collectionDto.getName());
         collection.setPopularity(collectionDto.getPopularity());
         collection.setReleaseDate(collectionDto.getReleaseDate());
-        collection.setSpotifyId(collectionDto.getSpotifyId());
+        collection.setSpotifyId(collectionDto.getId());
         collection.setTitle(collectionDto.getTitle());
         collection.setTotalTracks(collectionDto.getTotalTracks());
         collection.setType(collectionDto.getType());

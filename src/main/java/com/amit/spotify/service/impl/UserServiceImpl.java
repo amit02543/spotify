@@ -5,11 +5,14 @@ import com.amit.spotify.constants.CommonConstants;
 import com.amit.spotify.dto.CollectionDto;
 import com.amit.spotify.dto.UserCollectionDto;
 import com.amit.spotify.entity.Collection;
+import com.amit.spotify.entity.UserAlbum;
 import com.amit.spotify.entity.UserCollection;
 import com.amit.spotify.entity.UserSong;
 import com.amit.spotify.exception.SpotifyException;
+import com.amit.spotify.model.Album;
 import com.amit.spotify.model.Track;
 import com.amit.spotify.repository.CollectionRepository;
+import com.amit.spotify.repository.UserAlbumRepository;
 import com.amit.spotify.repository.UserCollectionRepository;
 import com.amit.spotify.repository.UserSongRepository;
 import com.amit.spotify.service.UserService;
@@ -55,6 +58,10 @@ public class UserServiceImpl implements UserService {
 
 
     @Autowired
+    private UserAlbumRepository userAlbumRepository;
+
+
+    @Autowired
     private UserSongRepository userSongRepository;
 
 
@@ -97,7 +104,7 @@ public class UserServiceImpl implements UserService {
 
 
     @Override
-    public List<UserSong> fetchUserLikedSongsByUsername(String username) {
+    public List<UserSong> fetchLikedSongsByUsername(String username) {
 
         if(null == username || CommonConstants.EMPTY_STR.equals(username.trim())) {
             throw new SpotifyException("Username can not be null or empty", HttpStatus.BAD_REQUEST);
@@ -109,7 +116,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public String addUserLikedSongsByUsername(String username, Track track) {
+    public String addLikedSongsByUsername(String username, Track track) {
 
         if(null == username || CommonConstants.EMPTY_STR.equals(username.trim())) {
             throw new SpotifyException("Username can not be null or empty", HttpStatus.BAD_REQUEST);
@@ -128,6 +135,7 @@ public class UserServiceImpl implements UserService {
         song.setAlbum(track.getAlbum());
         song.setReleaseDate(track.getReleaseDate());
         song.setDuration(track.getDuration());
+        song.setPopularity(track.getPopularity());
         song.setImageUrl(track.getImageUrl());
         song.setLikedDate(LocalDateTime.now());
 
@@ -295,6 +303,47 @@ public class UserServiceImpl implements UserService {
     }
 
 
+    @Override
+    public List<UserAlbum> fetchLikedAlbumsByUsername(String username) {
+
+        if(null == username || CommonConstants.EMPTY_STR.equals(username.trim())) {
+            throw new SpotifyException("Username can not be null or empty", HttpStatus.BAD_REQUEST);
+        }
+
+        return userAlbumRepository.findAllAlbumsByUsername(username);
+    }
+
+
+    @Override
+    public String addLikedAlbumsByUsername(String username, Album album) {
+
+        if(null == username || CommonConstants.EMPTY_STR.equals(username.trim())) {
+            throw new SpotifyException("Username can not be null or empty", HttpStatus.BAD_REQUEST);
+        } else if(null == album.getId() || CommonConstants.EMPTY_STR.equals(album.getId().trim())) {
+            throw new SpotifyException("Album id can not be null or empty", HttpStatus.BAD_REQUEST);
+        } else if(null == album.getName() || CommonConstants.EMPTY_STR.equals(album.getName().trim())) {
+            throw new SpotifyException("Album name can not be null or empty", HttpStatus.BAD_REQUEST);
+        }
+
+
+        UserAlbum userAlbum = new UserAlbum();
+        userAlbum.setUsername(username);
+        userAlbum.setAlbumId(album.getId());
+        userAlbum.setName(album.getName());
+        userAlbum.setArtists(album.getArtists());
+        userAlbum.setImageUrl(album.getImageUrl());
+        userAlbum.setReleaseDate(album.getReleaseDate());
+        userAlbum.setTotalTracks(album.getTotalTracks());
+        userAlbum.setLikedDate(LocalDateTime.now());
+
+
+        userAlbumRepository.save(userAlbum);
+
+
+        return album.getName() + " is added to your liked album";
+    }
+
+
     private CollectionDto collectionToCollectionDto(Collection collection) {
 
         CollectionDto collectionDto = new CollectionDto();
@@ -302,14 +351,15 @@ public class UserServiceImpl implements UserService {
         collectionDto.setArtists(collection.getArtists());
         collectionDto.setDuration(collection.getDuration());
         collectionDto.setImageUrl(collection.getImageUrl());
-        collectionDto.setName(collection.getName());
+        collectionDto.setName(collection.getAlbum());
         collectionDto.setPopularity(collection.getPopularity());
         collectionDto.setReleaseDate(collection.getReleaseDate());
-        collectionDto.setSpotifyId(collection.getSpotifyId());
+        collectionDto.setId(collection.getSpotifyId());
         collectionDto.setTitle(collection.getTitle());
         collectionDto.setTotalTracks(collection.getTotalTracks());
         collectionDto.setType(collection.getType());
         collectionDto.setUsername(collection.getUsername());
+
 
         return collectionDto;
     }

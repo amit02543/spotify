@@ -47,6 +47,9 @@ public class UserSong implements Serializable {
     @Column(name = "track_duration", nullable = false)
     private String duration;
 
+    @Column(name = "track_popularity", nullable = false)
+    private int popularity;
+
     @Column(name = "track_image_url", nullable = false)
     private String imageUrl;
 
@@ -62,7 +65,7 @@ public class UserSong implements Serializable {
 
 
     public UserSong(String id, String trackId, String username, String title, List<String> artists, String album,
-                    String duration, String imageUrl, String releaseDate, LocalDateTime likedDate) {
+                    String duration, int popularity, String imageUrl, String releaseDate, LocalDateTime likedDate) {
         this.id = id;
         this.trackId = trackId;
         this.username = username;
@@ -70,11 +73,11 @@ public class UserSong implements Serializable {
         this.artists = artists;
         this.album = album;
         this.duration = duration;
+        this.popularity = popularity;
         this.imageUrl = imageUrl;
         this.releaseDate = releaseDate;
         this.likedDate = likedDate;
     }
-
 
     public String getId() {
         return id;
@@ -132,6 +135,14 @@ public class UserSong implements Serializable {
         this.duration = duration;
     }
 
+    public int getPopularity() {
+        return popularity;
+    }
+
+    public void setPopularity(int popularity) {
+        this.popularity = popularity;
+    }
+
     public String getImageUrl() {
         return imageUrl;
     }
@@ -162,13 +173,13 @@ public class UserSong implements Serializable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         UserSong userSong = (UserSong) o;
-        return Objects.equals(id, userSong.id) && Objects.equals(trackId, userSong.trackId) && Objects.equals(username, userSong.username) && Objects.equals(title, userSong.title) && Objects.equals(artists, userSong.artists) && Objects.equals(album, userSong.album) && Objects.equals(duration, userSong.duration) && Objects.equals(imageUrl, userSong.imageUrl) && Objects.equals(releaseDate, userSong.releaseDate) && Objects.equals(likedDate, userSong.likedDate);
+        return popularity == userSong.popularity && Objects.equals(id, userSong.id) && Objects.equals(trackId, userSong.trackId) && Objects.equals(username, userSong.username) && Objects.equals(title, userSong.title) && Objects.equals(artists, userSong.artists) && Objects.equals(album, userSong.album) && Objects.equals(duration, userSong.duration) && Objects.equals(imageUrl, userSong.imageUrl) && Objects.equals(releaseDate, userSong.releaseDate) && Objects.equals(likedDate, userSong.likedDate);
     }
 
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, trackId, username, title, artists, album, duration, imageUrl, releaseDate, likedDate);
+        return Objects.hash(id, trackId, username, title, artists, album, duration, popularity, imageUrl, releaseDate, likedDate);
     }
 
 
@@ -182,6 +193,7 @@ public class UserSong implements Serializable {
                 ", artists=" + artists +
                 ", album='" + album + '\'' +
                 ", duration='" + duration + '\'' +
+                ", popularity=" + popularity +
                 ", imageUrl='" + imageUrl + '\'' +
                 ", releaseDate='" + releaseDate + '\'' +
                 ", likedDate=" + likedDate +

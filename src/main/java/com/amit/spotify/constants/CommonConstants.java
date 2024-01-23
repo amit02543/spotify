@@ -23,6 +23,8 @@ public class CommonConstants {
 
     public static final String ARTIST = "artist";
 
+    public static final String SONG = "song";
+
     public static final String TRACK = "track";
 
     public static final String ITEMS = "items";

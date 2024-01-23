@@ -2,9 +2,11 @@ package com.amit.spotify.controller;
 
 import com.amit.spotify.dto.CollectionDto;
 import com.amit.spotify.dto.UserCollectionDto;
+import com.amit.spotify.entity.UserAlbum;
 import com.amit.spotify.entity.UserCollection;
 import com.amit.spotify.entity.UserSong;
 import com.amit.spotify.exception.SpotifyException;
+import com.amit.spotify.model.Album;
 import com.amit.spotify.model.Track;
 import com.amit.spotify.service.UserService;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -213,12 +215,12 @@ public class UserController {
             method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE
     )
-    public ResponseEntity<String> fetchUserLikedSongsByUsername(@PathVariable String username) {
+    public ResponseEntity<String> fetchLikedSongsByUsername(@PathVariable String username) {
         log.info("Fetching liked songs for username: {}", username);
 
         try {
 
-            List<UserSong> userSongList = userService.fetchUserLikedSongsByUsername(username);
+            List<UserSong> userSongList = userService.fetchLikedSongsByUsername(username);
 
             return new ResponseEntity<>(objectMapper.writeValueAsString(userSongList), HttpStatus.OK);
         } catch(SpotifyException e) {
@@ -245,13 +247,75 @@ public class UserController {
             method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_VALUE
     )
-    public ResponseEntity<String> addUserLikedSongsByUsername(
+    public ResponseEntity<String> addLikedSongsByUsername(
             @PathVariable String username, @RequestBody Track track) {
         log.info("Adding liked song for username: {}", username);
 
         try {
 
-            String message = userService.addUserLikedSongsByUsername(username, track);
+            String message = userService.addLikedSongsByUsername(username, track);
+
+            JSONObject responseObject = new JSONObject();
+            responseObject.put("message", message);
+            responseObject.put("statusCode", HttpStatus.OK.value());
+
+            return new ResponseEntity<>(responseObject.toString(), HttpStatus.OK);
+        } catch(SpotifyException e) {
+
+            JSONObject errorJsonObject = new JSONObject();
+            errorJsonObject.put("message", e.getMessage());
+            errorJsonObject.put("statusCode", e.getStatusCode().value());
+
+            return new ResponseEntity<>(errorJsonObject.toString(), e.getStatusCode());
+        }
+
+    }
+
+
+    @RequestMapping(
+            value = "/{username}/albums",
+            method = RequestMethod.GET,
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    public ResponseEntity<String> fetchLikedAlbumsByUsername(@PathVariable String username) {
+        log.info("Fetching liked songs for username: {}", username);
+
+        try {
+
+            List<UserAlbum> userSongList = userService.fetchLikedAlbumsByUsername(username);
+
+            return new ResponseEntity<>(objectMapper.writeValueAsString(userSongList), HttpStatus.OK);
+        } catch(SpotifyException e) {
+
+            JSONObject errorJsonObject = new JSONObject();
+            errorJsonObject.put("message", e.getMessage());
+            errorJsonObject.put("statusCode", e.getStatusCode().value());
+
+            return new ResponseEntity<>(errorJsonObject.toString(), e.getStatusCode());
+        } catch (JsonProcessingException e) {
+
+            JSONObject errorJsonObject = new JSONObject();
+            errorJsonObject.put("message", "Something went wrong!");
+            errorJsonObject.put("statusCode", HttpStatus.INTERNAL_SERVER_ERROR.value());
+
+            return new ResponseEntity<>(errorJsonObject.toString(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+    }
+
+
+    @RequestMapping(
+            value = "/{username}/albums",
+            method = RequestMethod.POST,
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    public ResponseEntity<String> addLikedAlbumsByUsername(
+            @PathVariable String username, @RequestBody Album album) {
+        log.info("Adding liked song for username: {}", username);
+
+        try {
+
+            String message = userService.addLikedAlbumsByUsername(username, album);
 
             JSONObject responseObject = new JSONObject();
             responseObject.put("message", message);

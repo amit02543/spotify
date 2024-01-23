@@ -17,7 +17,7 @@ public class CollectionDto {
     private String username;
     private String name;
     private String type;
-    private String spotifyId;
+    private String id;
     private String title;
     private String album;
     private List<String> artists = new ArrayList<>();
