@@ -1,16 +1,20 @@
 package com.amit.spotify.service.impl;
 
+import com.amit.spotify.constants.CommonConstants;
 import com.amit.spotify.dto.CollectionDto;
 import com.amit.spotify.entity.Collection;
 import com.amit.spotify.entity.UserCollection;
+import com.amit.spotify.exception.SpotifyException;
 import com.amit.spotify.repository.CollectionRepository;
 import com.amit.spotify.repository.UserCollectionRepository;
 import com.amit.spotify.service.CollectionService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Slf4j
 @Service
@@ -42,6 +46,18 @@ public class CollectionServiceImpl implements CollectionService {
         userCollectionRepository.save(userCollection);
 
         return collectionDto.getType() + " added successfully to " + collectionDto.getName() + " collection";
+    }
+
+
+    @Override
+    public List<Collection> fetchAllCollectionsByUsername(String username) {
+
+        if(null == username || CommonConstants.EMPTY_STR.equals(username.trim())) {
+            throw new SpotifyException("Username can not be null or empty", HttpStatus.BAD_REQUEST);
+        }
+
+
+        return collectionRepository.findAllCollectionsByUsername(username);
     }
 
 

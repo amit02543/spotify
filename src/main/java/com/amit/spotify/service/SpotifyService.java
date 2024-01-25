@@ -4,10 +4,10 @@ import com.amit.spotify.model.SearchResult;
 
 public interface SpotifyService {
 
-    SearchResult searchByTermAndType(String query, String type);
+    SearchResult searchByTermAndType(String query, String type, int offset);
 
-    SearchResult fetchLatestAlbums();
+    SearchResult fetchLatestAlbums(String username);
 
-    SearchResult fetchRandomTracks();
+    SearchResult fetchRandomTracks(String username);
 
 }

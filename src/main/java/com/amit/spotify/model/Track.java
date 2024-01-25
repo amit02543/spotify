@@ -20,5 +20,7 @@ public class Track {
     private int popularity;
     private String imageUrl;
     private String releaseDate;
+    private boolean isLiked;
+    private String collection;
 
 }

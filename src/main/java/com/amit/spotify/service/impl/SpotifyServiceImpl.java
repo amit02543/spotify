@@ -2,10 +2,16 @@ package com.amit.spotify.service.impl;
 
 import com.amit.spotify.config.SpotifyConfig;
 import com.amit.spotify.constants.CommonConstants;
+import com.amit.spotify.entity.Collection;
+import com.amit.spotify.entity.UserAlbum;
+import com.amit.spotify.entity.UserSong;
 import com.amit.spotify.exception.SpotifyException;
 import com.amit.spotify.model.SearchResult;
+import com.amit.spotify.service.CollectionService;
 import com.amit.spotify.service.SpotifyService;
+import com.amit.spotify.service.UserService;
 import com.amit.spotify.util.SearchUtil;
+import io.micrometer.common.util.StringUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -17,6 +23,9 @@ import org.springframework.web.client.RestTemplate;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
+import java.util.Random;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -35,8 +44,16 @@ public class SpotifyServiceImpl implements SpotifyService {
     private RestTemplate restTemplate;
 
 
+    @Autowired
+    private CollectionService collectionService;
+
+
+    @Autowired
+    private UserService userService;
+
+
     @Override
-    public SearchResult searchByTermAndType(String query, String type) {
+    public SearchResult searchByTermAndType(String query, String type, int offset) {
 
         if(null == query) {
             throw new SpotifyException("Search query cannot be null", HttpStatus.BAD_REQUEST);
@@ -57,7 +74,7 @@ public class SpotifyServiceImpl implements SpotifyService {
 
         String searchUrl = spotifyConfig.getSearchUrl();
 
-        String formattedSearchUrl = String.format(searchUrl, query.toLowerCase().trim(), type.toLowerCase().trim());
+        String formattedSearchUrl = String.format(searchUrl, query.toLowerCase().trim(), type.toLowerCase().trim(), offset);
         log.info("Formatted URL: {}", formattedSearchUrl);
 
 
@@ -68,7 +85,6 @@ public class SpotifyServiceImpl implements SpotifyService {
 
         try {
             responseEntity = restTemplate.exchange(formattedSearchUrl, HttpMethod.GET, new HttpEntity<>(headers), String.class);
-            log.info("Search Response Entity: {}", responseEntity);
         } catch(RestClientException e) {
             log.error("Exception occurred while calling search URL: {}", e.getMessage());
             throw new SpotifyException("Exception occurred while calling search URL", HttpStatus.INTERNAL_SERVER_ERROR);
@@ -107,7 +123,7 @@ public class SpotifyServiceImpl implements SpotifyService {
 
 
     @Override
-    public SearchResult fetchLatestAlbums() {
+    public SearchResult fetchLatestAlbums(String username) {
 
         String accessToken = spotifyConfig.getAccessToken();
         log.info("Access Token: {}", accessToken);
@@ -123,7 +139,6 @@ public class SpotifyServiceImpl implements SpotifyService {
 
         try {
             responseEntity = restTemplate.exchange(formattedNewReleaseUrl, HttpMethod.GET, new HttpEntity<>(headers), String.class);
-            log.info("Formatted New Release Response Entity: {}", responseEntity);
         } catch(RestClientException e) {
             log.error("Exception occurred while calling search URL: {}", e.getMessage());
             throw new SpotifyException("Exception occurred while calling search URL", HttpStatus.INTERNAL_SERVER_ERROR);
@@ -148,19 +163,114 @@ public class SpotifyServiceImpl implements SpotifyService {
         JSONArray itemsArray = resultJsonObject.getJSONObject("albums").getJSONArray(CommonConstants.ITEMS);
 
 
-        return searchUtil.formatSearchResult(itemsArray, CommonConstants.ALBUM);
+        SearchResult searchResult = searchUtil.formatSearchResult(itemsArray, CommonConstants.ALBUM);
+
+        if(StringUtils.isNotBlank(username)) {
+
+            List<UserAlbum> userAlbums = userService.fetchLikedAlbumsByUsername(username);
+
+            List<String> userLikedAlbumIds = userAlbums.stream().map(UserAlbum::getAlbumId).toList();
+
+
+            List<Collection> collectionList = collectionService.fetchAllCollectionsByUsername(username);
+
+            Map<String, String> collectionMap = collectionList.stream()
+                    .collect(Collectors.toMap(
+                            Collection::getSpotifyId,
+                            Collection::getName,
+                            (oldValue, newValue) -> newValue));
+
+
+            searchResult.getAlbums().forEach(album -> {
+
+                if(userLikedAlbumIds.contains(album.getId())) {
+                    album.setLiked(true);
+                }
+
+                if(collectionMap.containsKey(album.getId())) {
+                    album.setCollection(collectionMap.get(album.getId()));
+                }
+
+            });
+
+        }
+
+
+        return searchResult;
     }
 
 
     @Override
-    public SearchResult fetchRandomTracks() {
+    public SearchResult fetchRandomTracks(String username) {
 
-        String query = getRandomSearchTerm();
+        SearchResult searchResult;
+        int resultCount;
 
-        String type = CommonConstants.TRACK;
+        do {
+
+            String query = getRandomSearchTerm();
+
+            String type = CommonConstants.TRACK;
+
+            int offset = new Random().ints(0, 500).findFirst().getAsInt();
+
+            searchResult = searchByTermAndType(query, type, offset);
+
+            resultCount = searchResult.getAlbums().size() + searchResult.getArtists().size() + searchResult.getTracks().size();
+
+        } while(resultCount < 20);
 
 
-        return searchByTermAndType(query, type);
+        if(StringUtils.isNotBlank(username)) {
+
+            List<UserSong> userSongs = userService.fetchLikedSongsByUsername(username);
+
+            List<String> userLikedSongIds = userSongs.stream().map(UserSong::getTrackId).toList();
+
+
+            List<UserAlbum> userAlbums = userService.fetchLikedAlbumsByUsername(username);
+
+            List<String> userLikedAlbumIds = userAlbums.stream().map(UserAlbum::getAlbumId).toList();
+
+
+            List<Collection> collectionList = collectionService.fetchAllCollectionsByUsername(username);
+
+            Map<String, String> collectionMap = collectionList.stream()
+                    .collect(Collectors.toMap(
+                            Collection::getSpotifyId,
+                            Collection::getName,
+                            (oldValue, newValue) -> newValue));
+
+
+            searchResult.getTracks().forEach(track -> {
+
+                if(userLikedSongIds.contains(track.getId())) {
+                    track.setLiked(true);
+                }
+
+                if(collectionMap.containsKey(track.getId())) {
+                    track.setCollection(collectionMap.get(track.getId()));
+                }
+
+            });
+
+
+            searchResult.getAlbums().forEach(album -> {
+
+                if(userLikedAlbumIds.contains(album.getId())) {
+                    album.setLiked(true);
+                }
+
+                if(collectionMap.containsKey(album.getId())) {
+                    album.setCollection(collectionMap.get(album.getId()));
+                }
+
+            });
+
+        }
+
+
+        return searchResult;
     }
 
 

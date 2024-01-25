@@ -12,6 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -43,7 +44,7 @@ public class SpotifyController {
 
         try {
 
-            SearchResult searchResult = spotifyService.searchByTermAndType(query, type);
+            SearchResult searchResult = spotifyService.searchByTermAndType(query, type, 0);
 
             return new ResponseEntity<>(objectMapper.writeValueAsString(searchResult), HttpStatus.OK);
         } catch(SpotifyException e) {
@@ -67,15 +68,15 @@ public class SpotifyController {
 
 
     @RequestMapping(
-            value = "/latest",
+            value = "/{username}/latest",
             method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE
     )
-    public ResponseEntity<String> fetchLatestAlbums() {
+    public ResponseEntity<String> fetchLatestAlbums(@PathVariable String username) {
 
         try {
 
-            SearchResult searchResult = spotifyService.fetchLatestAlbums();
+            SearchResult searchResult = spotifyService.fetchLatestAlbums(username);
 
             return new ResponseEntity<>(objectMapper.writeValueAsString(searchResult), HttpStatus.OK);
         } catch(SpotifyException e) {
@@ -99,15 +100,15 @@ public class SpotifyController {
 
 
     @RequestMapping(
-            value = "/random",
+            value = "/{username}/random",
             method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE
     )
-    public ResponseEntity<String> fetchRandomTracks() {
+    public ResponseEntity<String> fetchRandomTracks(@PathVariable String username) {
 
         try {
 
-            SearchResult searchResult = spotifyService.fetchRandomTracks();
+            SearchResult searchResult = spotifyService.fetchRandomTracks(username);
 
             return new ResponseEntity<>(objectMapper.writeValueAsString(searchResult), HttpStatus.OK);
         } catch(SpotifyException e) {

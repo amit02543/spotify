@@ -18,5 +18,7 @@ public class Album {
     private String releaseDate;
     private String imageUrl;
     private int totalTracks;
+    private boolean isLiked;
+    private String collection;
 
 }
