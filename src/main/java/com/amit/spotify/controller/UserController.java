@@ -33,7 +33,7 @@ import java.util.List;
 
 @Tag(name = "User Controller", description = "User controller contains APIs for user management")
 @RestController
-@RequestMapping("/user")
+@RequestMapping("/v1/user")
 @CrossOrigin
 @Slf4j
 public class UserController {
@@ -220,7 +220,7 @@ public class UserController {
 
 
     @RequestMapping(
-            value = "/{username}/likes",
+            value = "/{username}/songs",
             method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE
     )
@@ -252,7 +252,7 @@ public class UserController {
 
 
     @RequestMapping(
-            value = "/{username}/likes",
+            value = "/{username}/songs",
             method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_VALUE
     )

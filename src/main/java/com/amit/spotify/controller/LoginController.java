@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @Tag(name = "Login Controller", description = "Login controller contains APIs for login")
 @RestController
-@RequestMapping("/login")
+@RequestMapping("/v1/login")
 @CrossOrigin
 @Slf4j
 public class LoginController {

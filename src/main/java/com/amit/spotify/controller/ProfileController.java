@@ -27,7 +27,7 @@ import java.io.IOException;
 
 @Tag(name = "Profile Controller", description = "Profile controller contains APIs for user profile management")
 @RestController
-@RequestMapping("/profile")
+@RequestMapping("/v1/profile")
 @CrossOrigin
 @Slf4j
 public class ProfileController {

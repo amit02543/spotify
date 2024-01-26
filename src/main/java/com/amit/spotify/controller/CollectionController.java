@@ -25,6 +25,7 @@ import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.List;
 
 @Tag(name = "Collection Controller", description = "Collection controller contains APIs for collection management")
+@RequestMapping("/v1")
 @RestController
 @CrossOrigin
 @Slf4j

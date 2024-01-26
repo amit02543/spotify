@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @Tag(name = "Spotify Controller", description = "Spotify controller contains APIs for spotify music")
 @RestController
-@RequestMapping("/spotify")
+@RequestMapping("/v1/spotify")
 @CrossOrigin
 @Slf4j
 public class SpotifyController {

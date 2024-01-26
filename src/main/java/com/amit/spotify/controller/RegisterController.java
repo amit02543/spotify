@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @Tag(name = "Register Controller", description = "Register controller contains APIs for user registration management")
 @RestController
-@RequestMapping("/register")
+@RequestMapping("/v1/register")
 @CrossOrigin
 @Slf4j
 public class RegisterController {

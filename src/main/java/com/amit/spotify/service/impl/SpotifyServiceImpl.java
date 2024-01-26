@@ -55,14 +55,10 @@ public class SpotifyServiceImpl implements SpotifyService {
     @Override
     public SearchResult searchByTermAndType(String query, String type, int offset) {
 
-        if(null == query) {
-            throw new SpotifyException("Search query cannot be null", HttpStatus.BAD_REQUEST);
-        } else if(CommonConstants.EMPTY_STR.equals(query.trim())) {
-            throw new SpotifyException("Search query cannot be empty", HttpStatus.BAD_REQUEST);
-        } else if(null == type) {
-            throw new SpotifyException("Search type cannot be null", HttpStatus.BAD_REQUEST);
-        } else if(CommonConstants.EMPTY_STR.equals(type.trim())) {
-            throw new SpotifyException("Search type cannot be empty", HttpStatus.BAD_REQUEST);
+        if(StringUtils.isBlank(query)) {
+            throw new SpotifyException("Search query cannot be null or empty", HttpStatus.BAD_REQUEST);
+        } else if(StringUtils.isBlank(type)) {
+            throw new SpotifyException("Search type cannot be null or empty", HttpStatus.BAD_REQUEST);
         } else if(!CommonConstants.TYPE_LIST.contains(type.toLowerCase().trim())) {
             throw new SpotifyException("Not a valid search type", HttpStatus.BAD_REQUEST);
         }
