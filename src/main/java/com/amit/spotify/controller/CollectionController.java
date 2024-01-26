@@ -6,6 +6,7 @@ import com.amit.spotify.exception.SpotifyException;
 import com.amit.spotify.service.CollectionService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.List;
 
+@Tag(name = "Collection Controller", description = "Collection controller contains APIs for collection management")
 @RestController
 @CrossOrigin
 @Slf4j

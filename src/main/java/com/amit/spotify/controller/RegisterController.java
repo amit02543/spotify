@@ -5,14 +5,20 @@ import com.amit.spotify.dto.SignUpDto;
 import com.amit.spotify.exception.SpotifyException;
 import com.amit.spotify.service.RegisterService;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
 
+@Tag(name = "Register Controller", description = "Register controller contains APIs for user registration management")
 @RestController
 @RequestMapping("/register")
 @CrossOrigin

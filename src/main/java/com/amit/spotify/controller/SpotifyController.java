@@ -5,6 +5,7 @@ import com.amit.spotify.model.SearchResult;
 import com.amit.spotify.service.SpotifyService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+@Tag(name = "Spotify Controller", description = "Spotify controller contains APIs for spotify music")
 @RestController
 @RequestMapping("/spotify")
 @CrossOrigin
