@@ -1,7 +1,7 @@
 package com.amit.spotify.service.impl;
 
 import com.amit.spotify.config.SpotifyConfig;
-import com.amit.spotify.constants.CommonConstants;
+import com.amit.spotify.constants.SpotifyConstants;
 import com.amit.spotify.entity.Collection;
 import com.amit.spotify.entity.UserAlbum;
 import com.amit.spotify.entity.UserSong;
@@ -21,7 +21,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -59,7 +58,7 @@ public class SpotifyServiceImpl implements SpotifyService {
             throw new SpotifyException("Search query cannot be null or empty", HttpStatus.BAD_REQUEST);
         } else if(StringUtils.isBlank(type)) {
             throw new SpotifyException("Search type cannot be null or empty", HttpStatus.BAD_REQUEST);
-        } else if(!CommonConstants.TYPE_LIST.contains(type.toLowerCase().trim())) {
+        } else if(!SpotifyConstants.TYPE_LIST.contains(type.toLowerCase().trim())) {
             throw new SpotifyException("Not a valid search type", HttpStatus.BAD_REQUEST);
         }
 
@@ -106,12 +105,12 @@ public class SpotifyServiceImpl implements SpotifyService {
 
         String typeLC = type.toLowerCase().trim();
 
-        if(CommonConstants.ALBUM.equals(typeLC)) {
-            itemsArray = resultJsonObject.getJSONObject("albums").getJSONArray(CommonConstants.ITEMS);
-        } else if(CommonConstants.ARTIST.equals(typeLC)) {
-            itemsArray = resultJsonObject.getJSONObject("artists").getJSONArray(CommonConstants.ITEMS);
-        } else if(CommonConstants.TRACK.equals(typeLC)) {
-            itemsArray = resultJsonObject.getJSONObject("tracks").getJSONArray(CommonConstants.ITEMS);
+        if(SpotifyConstants.ALBUM.equals(typeLC)) {
+            itemsArray = resultJsonObject.getJSONObject("albums").getJSONArray(SpotifyConstants.ITEMS);
+        } else if(SpotifyConstants.ARTIST.equals(typeLC)) {
+            itemsArray = resultJsonObject.getJSONObject("artists").getJSONArray(SpotifyConstants.ITEMS);
+        } else if(SpotifyConstants.TRACK.equals(typeLC)) {
+            itemsArray = resultJsonObject.getJSONObject("tracks").getJSONArray(SpotifyConstants.ITEMS);
         }
 
         return searchUtil.formatSearchResult(itemsArray, typeLC);
@@ -156,10 +155,10 @@ public class SpotifyServiceImpl implements SpotifyService {
 
 
         JSONObject resultJsonObject = new JSONObject(responseEntity.getBody());
-        JSONArray itemsArray = resultJsonObject.getJSONObject("albums").getJSONArray(CommonConstants.ITEMS);
+        JSONArray itemsArray = resultJsonObject.getJSONObject("albums").getJSONArray(SpotifyConstants.ITEMS);
 
 
-        SearchResult searchResult = searchUtil.formatSearchResult(itemsArray, CommonConstants.ALBUM);
+        SearchResult searchResult = searchUtil.formatSearchResult(itemsArray, SpotifyConstants.ALBUM);
 
         if(StringUtils.isNotBlank(username)) {
 
@@ -206,7 +205,7 @@ public class SpotifyServiceImpl implements SpotifyService {
 
             String query = getRandomSearchTerm();
 
-            String type = CommonConstants.TRACK;
+            String type = SpotifyConstants.TRACK;
 
             int offset = new Random().ints(0, 500).findFirst().getAsInt();
 
@@ -280,7 +279,7 @@ public class SpotifyServiceImpl implements SpotifyService {
         return switch ((int) Math.round(Math.random())) {
             case 0 -> randomCharacter + '%';
             case 1 -> '%' + randomCharacter + '%';
-            default -> CommonConstants.EMPTY_STR;
+            default -> SpotifyConstants.EMPTY_STR;
         };
 
     }

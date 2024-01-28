@@ -1,16 +1,32 @@
 package com.amit.spotify.util;
 
+import com.amit.spotify.constants.SpotifyConstants;
 import com.amit.spotify.dto.UserDto;
 import com.amit.spotify.entity.User;
 import com.amit.spotify.exception.SpotifyException;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Component;
 
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.util.Arrays;
+import java.util.Date;
 
 @Component
-public class CommonUtil {
+public class SpotifyUtility {
+
+
+    public String getFormattedCurrentTimestamp() {
+
+        return Instant
+                .ofEpochMilli(new Date().getTime())
+                .atZone(ZoneId.systemDefault())
+                .toLocalDateTime().format(SpotifyConstants.DATE_TIME_FORMATTER);
+    }
 
 
     public UserDto convertUserToUserDto(User user) {
@@ -46,6 +62,15 @@ public class CommonUtil {
             throw new SpotifyException("SHA algorithm is not valid");
         }
 
+    }
+
+
+    public HttpStatus getHttpStatusByCode(HttpStatusCode statusCode) {
+
+        return Arrays.stream(HttpStatus.values())
+                .filter(status -> status.value() == statusCode.value())
+                .findAny()
+                .orElse(HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
 

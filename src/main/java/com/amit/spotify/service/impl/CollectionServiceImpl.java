@@ -1,6 +1,6 @@
 package com.amit.spotify.service.impl;
 
-import com.amit.spotify.constants.CommonConstants;
+import com.amit.spotify.constants.SpotifyConstants;
 import com.amit.spotify.dto.CollectionDto;
 import com.amit.spotify.entity.Collection;
 import com.amit.spotify.entity.UserCollection;
@@ -52,7 +52,7 @@ public class CollectionServiceImpl implements CollectionService {
     @Override
     public List<Collection> fetchAllCollectionsByUsername(String username) {
 
-        if(null == username || CommonConstants.EMPTY_STR.equals(username.trim())) {
+        if(null == username || SpotifyConstants.EMPTY_STR.equals(username.trim())) {
             throw new SpotifyException("Username can not be null or empty", HttpStatus.BAD_REQUEST);
         }
 

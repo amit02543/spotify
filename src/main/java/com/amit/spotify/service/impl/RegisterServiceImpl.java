@@ -1,6 +1,6 @@
 package com.amit.spotify.service.impl;
 
-import com.amit.spotify.constants.CommonConstants;
+import com.amit.spotify.constants.SpotifyConstants;
 import com.amit.spotify.dto.SignUpDto;
 import com.amit.spotify.entity.User;
 import com.amit.spotify.exception.SpotifyException;
@@ -26,17 +26,17 @@ public class RegisterServiceImpl implements RegisterService {
 
         if(null == signUpDto.getUsername()) {
             throw new SpotifyException("Username is required", HttpStatus.BAD_REQUEST);
-        } else if(CommonConstants.EMPTY_STR.equals(signUpDto.getUsername().trim())) {
+        } else if(SpotifyConstants.EMPTY_STR.equals(signUpDto.getUsername().trim())) {
             throw new SpotifyException("Username should not be empty", HttpStatus.BAD_REQUEST);
         } else if(null == signUpDto.getEmail()) {
             throw new SpotifyException("Email is required", HttpStatus.BAD_REQUEST);
-        } else if(CommonConstants.EMPTY_STR.equals(signUpDto.getEmail())) {
+        } else if(SpotifyConstants.EMPTY_STR.equals(signUpDto.getEmail())) {
             throw new SpotifyException("Email should not be empty", HttpStatus.BAD_REQUEST);
         } else if(!signUpDto.getEmail().contains("@") || !signUpDto.getEmail().contains(".")) {
             throw new SpotifyException("Email is not valid", HttpStatus.BAD_REQUEST);
         } else if(null == signUpDto.getPassword()) {
             throw new SpotifyException("Password is required", HttpStatus.BAD_REQUEST);
-        } else if(CommonConstants.EMPTY_STR.equals(signUpDto.getPassword())) {
+        } else if(SpotifyConstants.EMPTY_STR.equals(signUpDto.getPassword())) {
             throw new SpotifyException("Password should not be empty", HttpStatus.BAD_REQUEST);
         } else if(signUpDto.getPassword().length() < 6) {
             throw new SpotifyException("Password should be greater and equal to 6 characters", HttpStatus.BAD_REQUEST);

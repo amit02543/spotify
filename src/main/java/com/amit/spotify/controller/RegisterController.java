@@ -1,6 +1,6 @@
 package com.amit.spotify.controller;
 
-import com.amit.spotify.constants.CommonConstants;
+import com.amit.spotify.constants.SpotifyConstants;
 import com.amit.spotify.dto.SignUpDto;
 import com.amit.spotify.exception.SpotifyException;
 import com.amit.spotify.service.RegisterService;
@@ -35,7 +35,7 @@ public class RegisterController {
 
 
     @RequestMapping(
-            value = CommonConstants.EMPTY_STR,
+            value = SpotifyConstants.EMPTY_STR,
             method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_VALUE
     )

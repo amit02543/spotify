@@ -1,6 +1,6 @@
 package com.amit.spotify.controller;
 
-import com.amit.spotify.constants.CommonConstants;
+import com.amit.spotify.constants.SpotifyConstants;
 import com.amit.spotify.dto.LoginDto;
 import com.amit.spotify.entity.User;
 import com.amit.spotify.exception.SpotifyException;
@@ -37,7 +37,7 @@ public class LoginController {
 
 
     @RequestMapping(
-            value = CommonConstants.EMPTY_STR,
+            value = SpotifyConstants.EMPTY_STR,
             method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_VALUE
     )

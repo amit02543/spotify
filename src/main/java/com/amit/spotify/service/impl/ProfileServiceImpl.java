@@ -1,14 +1,14 @@
 package com.amit.spotify.service.impl;
 
 import com.amit.spotify.config.CloudinaryConfig;
-import com.amit.spotify.constants.CommonConstants;
+import com.amit.spotify.constants.SpotifyConstants;
 import com.amit.spotify.dto.UserDto;
 import com.amit.spotify.entity.User;
 import com.amit.spotify.exception.SpotifyException;
 import com.amit.spotify.model.Profile;
 import com.amit.spotify.repository.UserRepository;
 import com.amit.spotify.service.ProfileService;
-import com.amit.spotify.util.CommonUtil;
+import com.amit.spotify.util.SpotifyUtility;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONObject;
@@ -22,8 +22,6 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.time.Clock;
-import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Base64;
@@ -49,7 +47,7 @@ public class ProfileServiceImpl implements ProfileService {
 
 
     @Autowired
-    private CommonUtil commonUtil;
+    private SpotifyUtility spotifyUtility;
 
 
     @Override
@@ -57,7 +55,7 @@ public class ProfileServiceImpl implements ProfileService {
 
         if(null == username) {
             throw new SpotifyException("Username is required", HttpStatus.BAD_REQUEST);
-        } else if(CommonConstants.EMPTY_STR.equals(username.trim())) {
+        } else if(SpotifyConstants.EMPTY_STR.equals(username.trim())) {
             throw new SpotifyException("Username can not be empty", HttpStatus.BAD_REQUEST);
         }
 
@@ -69,7 +67,7 @@ public class ProfileServiceImpl implements ProfileService {
         }
 
 
-        return commonUtil.convertUserToUserDto(optionalUser.get());
+        return spotifyUtility.convertUserToUserDto(optionalUser.get());
     }
 
     @Override
@@ -78,7 +76,7 @@ public class ProfileServiceImpl implements ProfileService {
 
         if(null == username) {
             throw new SpotifyException("Username is required", HttpStatus.BAD_REQUEST);
-        } else if(CommonConstants.EMPTY_STR.equals(username.trim())) {
+        } else if(SpotifyConstants.EMPTY_STR.equals(username.trim())) {
             throw new SpotifyException("Username can not be empty", HttpStatus.BAD_REQUEST);
         }
 
@@ -99,7 +97,7 @@ public class ProfileServiceImpl implements ProfileService {
             throw new SpotifyException("Something went wrong!!!" + username, HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
-        return commonUtil.convertUserToUserDto(updatedUser.get());
+        return spotifyUtility.convertUserToUserDto(updatedUser.get());
     }
 
 
@@ -109,7 +107,7 @@ public class ProfileServiceImpl implements ProfileService {
 
         if(null == username) {
             throw new SpotifyException("Username is required", HttpStatus.BAD_REQUEST);
-        } else if(CommonConstants.EMPTY_STR.equals(username.trim())) {
+        } else if(SpotifyConstants.EMPTY_STR.equals(username.trim())) {
             throw new SpotifyException("Username can not be empty", HttpStatus.BAD_REQUEST);
         }
 
@@ -142,7 +140,7 @@ public class ProfileServiceImpl implements ProfileService {
         String signature;
 
         try {
-            signature = commonUtil.generateSHAHexValue(signatureString);
+            signature = spotifyUtility.generateSHAHexValue(signatureString);
             log.info("Signature: {}", signature);
         } catch (SpotifyException e) {
             throw new SpotifyException("SHA algorithm is not valid", HttpStatus.INTERNAL_SERVER_ERROR);
@@ -151,7 +149,7 @@ public class ProfileServiceImpl implements ProfileService {
 
         //TODO: Step-3 create request body
 
-        String profileUrl = CommonConstants.EMPTY_STR;
+        String profileUrl = SpotifyConstants.EMPTY_STR;
 
         try {
 
@@ -229,7 +227,7 @@ public class ProfileServiceImpl implements ProfileService {
 
         if(null == username) {
             throw new SpotifyException("Username is required", HttpStatus.BAD_REQUEST);
-        } else if(CommonConstants.EMPTY_STR.equals(username.trim())) {
+        } else if(SpotifyConstants.EMPTY_STR.equals(username.trim())) {
             throw new SpotifyException("Username can not be empty", HttpStatus.BAD_REQUEST);
         }
 
@@ -262,7 +260,7 @@ public class ProfileServiceImpl implements ProfileService {
 
         if(null == username) {
             throw new SpotifyException("Username is required", HttpStatus.BAD_REQUEST);
-        } else if(CommonConstants.EMPTY_STR.equals(username.trim())) {
+        } else if(SpotifyConstants.EMPTY_STR.equals(username.trim())) {
             throw new SpotifyException("Username can not be empty", HttpStatus.BAD_REQUEST);
         }
 
@@ -289,7 +287,7 @@ public class ProfileServiceImpl implements ProfileService {
 
         log.info("Updated User: {}", updatedUser.get());
 
-        return commonUtil.convertUserToUserDto(updatedUser.get());
+        return spotifyUtility.convertUserToUserDto(updatedUser.get());
     }
 
 

@@ -1,6 +1,6 @@
 package com.amit.spotify.util;
 
-import com.amit.spotify.constants.CommonConstants;
+import com.amit.spotify.constants.SpotifyConstants;
 import com.amit.spotify.model.Album;
 import com.amit.spotify.model.Artist;
 import com.amit.spotify.model.SearchResult;
@@ -24,11 +24,11 @@ public class SearchUtil {
 
             JSONObject jsonObject = itemsArray.getJSONObject(i);
 
-            if(CommonConstants.ALBUM.equals(type)) {
+            if(SpotifyConstants.ALBUM.equals(type)) {
                 searchResult.addAlbum(formatAlbumObject(jsonObject));
-            } else if(CommonConstants.ARTIST.equals(type)) {
+            } else if(SpotifyConstants.ARTIST.equals(type)) {
                 searchResult.addArtist(formatArtistObject(jsonObject));
-            } else if(CommonConstants.TRACK.equals(type)) {
+            } else if(SpotifyConstants.TRACK.equals(type)) {
                 searchResult.addTrack(formatTrackObject(jsonObject));
             }
 
@@ -120,7 +120,7 @@ public class SearchUtil {
             return imagesJsonArray.getJSONObject(0).getString("url");
         }
 
-        return CommonConstants.EMPTY_STR;
+        return SpotifyConstants.EMPTY_STR;
     }
 
 
@@ -131,10 +131,10 @@ public class SearchUtil {
         int min = roundOffDuration / 60;
         int sec = roundOffDuration % 60;
 
-        String minStr = min < 10 ? CommonConstants.ZERO + min : CommonConstants.EMPTY_STR + min;
-        String secStr = sec < 10 ? CommonConstants.ZERO + sec : CommonConstants.EMPTY_STR + sec;
+        String minStr = min < 10 ? SpotifyConstants.ZERO + min : SpotifyConstants.EMPTY_STR + min;
+        String secStr = sec < 10 ? SpotifyConstants.ZERO + sec : SpotifyConstants.EMPTY_STR + sec;
 
-        return minStr + CommonConstants.COLON + secStr;
+        return minStr + SpotifyConstants.COLON + secStr;
     }
 
 

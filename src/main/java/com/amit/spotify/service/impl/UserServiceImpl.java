@@ -1,7 +1,7 @@
 package com.amit.spotify.service.impl;
 
 import com.amit.spotify.config.CloudinaryConfig;
-import com.amit.spotify.constants.CommonConstants;
+import com.amit.spotify.constants.SpotifyConstants;
 import com.amit.spotify.dto.CollectionDto;
 import com.amit.spotify.dto.UserCollectionDto;
 import com.amit.spotify.entity.Collection;
@@ -16,7 +16,7 @@ import com.amit.spotify.repository.UserAlbumRepository;
 import com.amit.spotify.repository.UserCollectionRepository;
 import com.amit.spotify.repository.UserSongRepository;
 import com.amit.spotify.service.UserService;
-import com.amit.spotify.util.CommonUtil;
+import com.amit.spotify.util.SpotifyUtility;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONObject;
@@ -66,13 +66,13 @@ public class UserServiceImpl implements UserService {
 
 
     @Autowired
-    private CommonUtil commonUtil;
+    private SpotifyUtility spotifyUtility;
 
 
     @Override
     public List<UserCollection> fetchCollectionsByUsername(String username) {
 
-        if(null == username || CommonConstants.EMPTY_STR.equals(username.trim())) {
+        if(null == username || SpotifyConstants.EMPTY_STR.equals(username.trim())) {
             throw new SpotifyException("Username can not be null or empty", HttpStatus.BAD_REQUEST);
         }
 
@@ -83,9 +83,9 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<UserCollection> addCollectionsByUsername(UserCollectionDto userCollectionDto) {
 
-        if(null == userCollectionDto.getUserName() || CommonConstants.EMPTY_STR.equals(userCollectionDto.getUserName().trim())) {
+        if(null == userCollectionDto.getUserName() || SpotifyConstants.EMPTY_STR.equals(userCollectionDto.getUserName().trim())) {
             throw new SpotifyException("Username can not be null or empty", HttpStatus.BAD_REQUEST);
-        } else if(null == userCollectionDto.getCollectionName() || CommonConstants.EMPTY_STR.equals(userCollectionDto.getCollectionName().trim())) {
+        } else if(null == userCollectionDto.getCollectionName() || SpotifyConstants.EMPTY_STR.equals(userCollectionDto.getCollectionName().trim())) {
             throw new SpotifyException("Collection name can not be null or empty", HttpStatus.BAD_REQUEST);
         }
 
@@ -106,7 +106,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<UserSong> fetchLikedSongsByUsername(String username) {
 
-        if(null == username || CommonConstants.EMPTY_STR.equals(username.trim())) {
+        if(null == username || SpotifyConstants.EMPTY_STR.equals(username.trim())) {
             throw new SpotifyException("Username can not be null or empty", HttpStatus.BAD_REQUEST);
         }
 
@@ -118,11 +118,11 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public String addLikedSongsByUsername(String username, Track track) {
 
-        if(null == username || CommonConstants.EMPTY_STR.equals(username.trim())) {
+        if(null == username || SpotifyConstants.EMPTY_STR.equals(username.trim())) {
             throw new SpotifyException("Username can not be null or empty", HttpStatus.BAD_REQUEST);
-        } else if(null == track.getId() || CommonConstants.EMPTY_STR.equals(track.getId().trim())) {
+        } else if(null == track.getId() || SpotifyConstants.EMPTY_STR.equals(track.getId().trim())) {
             throw new SpotifyException("Track id can not be null or empty", HttpStatus.BAD_REQUEST);
-        } else if(null == track.getTitle() || CommonConstants.EMPTY_STR.equals(track.getTitle().trim())) {
+        } else if(null == track.getTitle() || SpotifyConstants.EMPTY_STR.equals(track.getTitle().trim())) {
             throw new SpotifyException("Track title can not be null or empty", HttpStatus.BAD_REQUEST);
         }
 
@@ -149,9 +149,9 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<CollectionDto> fetchCollectionsByUsernameAndName(String username, String collectionName) {
 
-        if(null == username || CommonConstants.EMPTY_STR.equals(username.trim())) {
+        if(null == username || SpotifyConstants.EMPTY_STR.equals(username.trim())) {
             throw new SpotifyException("Username can not be null or empty", HttpStatus.BAD_REQUEST);
-        } else if(null == collectionName || CommonConstants.EMPTY_STR.equals(collectionName.trim())) {
+        } else if(null == collectionName || SpotifyConstants.EMPTY_STR.equals(collectionName.trim())) {
             throw new SpotifyException("Collection name can not be null or empty", HttpStatus.BAD_REQUEST);
         }
 
@@ -174,9 +174,9 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserCollection fetchCollectionDetailsByUsernameAndName(String username, String collectionName) {
 
-        if(null == username || CommonConstants.EMPTY_STR.equals(username.trim())) {
+        if(null == username || SpotifyConstants.EMPTY_STR.equals(username.trim())) {
             throw new SpotifyException("Username can not be null or empty", HttpStatus.BAD_REQUEST);
-        } else if(null == collectionName || CommonConstants.EMPTY_STR.equals(collectionName.trim())) {
+        } else if(null == collectionName || SpotifyConstants.EMPTY_STR.equals(collectionName.trim())) {
             throw new SpotifyException("Collection name can not be null or empty", HttpStatus.BAD_REQUEST);
         }
 
@@ -195,9 +195,9 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserCollection uploadCollectionImageByUsernameAndName(String username, String collectionName, MultipartFile file) {
 
-        if(null == username || CommonConstants.EMPTY_STR.equals(username.trim())) {
+        if(null == username || SpotifyConstants.EMPTY_STR.equals(username.trim())) {
             throw new SpotifyException("Username can not be null or empty", HttpStatus.BAD_REQUEST);
-        } else if(null == collectionName || CommonConstants.EMPTY_STR.equals(collectionName.trim())) {
+        } else if(null == collectionName || SpotifyConstants.EMPTY_STR.equals(collectionName.trim())) {
             throw new SpotifyException("Collection name can not be null or empty", HttpStatus.BAD_REQUEST);
         }
 
@@ -223,7 +223,7 @@ public class UserServiceImpl implements UserService {
         String signature;
 
         try {
-            signature = commonUtil.generateSHAHexValue(signatureString);
+            signature = spotifyUtility.generateSHAHexValue(signatureString);
             log.info("Signature: {}", signature);
         } catch (SpotifyException e) {
             throw new SpotifyException("SHA algorithm is not valid", HttpStatus.INTERNAL_SERVER_ERROR);
@@ -306,7 +306,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<UserAlbum> fetchLikedAlbumsByUsername(String username) {
 
-        if(null == username || CommonConstants.EMPTY_STR.equals(username.trim())) {
+        if(null == username || SpotifyConstants.EMPTY_STR.equals(username.trim())) {
             throw new SpotifyException("Username can not be null or empty", HttpStatus.BAD_REQUEST);
         }
 
@@ -317,11 +317,11 @@ public class UserServiceImpl implements UserService {
     @Override
     public String addLikedAlbumsByUsername(String username, Album album) {
 
-        if(null == username || CommonConstants.EMPTY_STR.equals(username.trim())) {
+        if(null == username || SpotifyConstants.EMPTY_STR.equals(username.trim())) {
             throw new SpotifyException("Username can not be null or empty", HttpStatus.BAD_REQUEST);
-        } else if(null == album.getId() || CommonConstants.EMPTY_STR.equals(album.getId().trim())) {
+        } else if(null == album.getId() || SpotifyConstants.EMPTY_STR.equals(album.getId().trim())) {
             throw new SpotifyException("Album id can not be null or empty", HttpStatus.BAD_REQUEST);
-        } else if(null == album.getName() || CommonConstants.EMPTY_STR.equals(album.getName().trim())) {
+        } else if(null == album.getName() || SpotifyConstants.EMPTY_STR.equals(album.getName().trim())) {
             throw new SpotifyException("Album name can not be null or empty", HttpStatus.BAD_REQUEST);
         }
 

@@ -1,6 +1,6 @@
 package com.amit.spotify.service.impl;
 
-import com.amit.spotify.constants.CommonConstants;
+import com.amit.spotify.constants.SpotifyConstants;
 import com.amit.spotify.dto.LoginDto;
 import com.amit.spotify.entity.User;
 import com.amit.spotify.exception.SpotifyException;
@@ -25,11 +25,11 @@ public class LoginServiceImpl implements LoginService {
 
         if(null == loginDto.getUsername()) {
             throw new SpotifyException("Username is required", HttpStatus.BAD_REQUEST);
-        } else if(CommonConstants.EMPTY_STR.equals(loginDto.getUsername().trim())) {
+        } else if(SpotifyConstants.EMPTY_STR.equals(loginDto.getUsername().trim())) {
             throw new SpotifyException("Username should not be empty", HttpStatus.BAD_REQUEST);
         } else if(null == loginDto.getPassword()) {
             throw new SpotifyException("Password is required", HttpStatus.BAD_REQUEST);
-        } else if(CommonConstants.EMPTY_STR.equals(loginDto.getPassword())) {
+        } else if(SpotifyConstants.EMPTY_STR.equals(loginDto.getPassword())) {
             throw new SpotifyException("Password should not be empty", HttpStatus.BAD_REQUEST);
         } else if(loginDto.getPassword().length() < 6) {
             throw new SpotifyException("Password should be greater and equal to 6 characters", HttpStatus.BAD_REQUEST);
