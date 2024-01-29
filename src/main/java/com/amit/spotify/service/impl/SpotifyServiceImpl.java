@@ -2,21 +2,26 @@ package com.amit.spotify.service.impl;
 
 import com.amit.spotify.config.SpotifyConfig;
 import com.amit.spotify.constants.SpotifyConstants;
-import com.amit.spotify.entity.Collection;
-import com.amit.spotify.entity.UserAlbum;
-import com.amit.spotify.entity.UserSong;
+import com.amit.spotify.dto.CollectionDto;
 import com.amit.spotify.exception.SpotifyException;
+import com.amit.spotify.model.Album;
 import com.amit.spotify.model.SearchResult;
+import com.amit.spotify.model.Track;
+import com.amit.spotify.service.AlbumService;
 import com.amit.spotify.service.CollectionService;
+import com.amit.spotify.service.SongService;
 import com.amit.spotify.service.SpotifyService;
-import com.amit.spotify.service.UserService;
 import com.amit.spotify.util.SearchUtil;
 import io.micrometer.common.util.StringUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.*;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
@@ -48,7 +53,11 @@ public class SpotifyServiceImpl implements SpotifyService {
 
 
     @Autowired
-    private UserService userService;
+    private AlbumService albumService;
+
+
+    @Autowired
+    private SongService songService;
 
 
     @Override
@@ -162,17 +171,17 @@ public class SpotifyServiceImpl implements SpotifyService {
 
         if(StringUtils.isNotBlank(username)) {
 
-            List<UserAlbum> userAlbums = userService.fetchLikedAlbumsByUsername(username);
+            List<Album> albums = albumService.fetchLikedAlbumsByUsername(username);
 
-            List<String> userLikedAlbumIds = userAlbums.stream().map(UserAlbum::getAlbumId).toList();
+            List<String> userLikedAlbumIds = albums.stream().map(Album::getId).toList();
 
 
-            List<Collection> collectionList = collectionService.fetchAllCollectionsByUsername(username);
+            List<CollectionDto> collectionList = collectionService.fetchAllCollectionsItemListByUsername(username);
 
             Map<String, String> collectionMap = collectionList.stream()
                     .collect(Collectors.toMap(
-                            Collection::getSpotifyId,
-                            Collection::getName,
+                            CollectionDto::getId,
+                            CollectionDto::getName,
                             (oldValue, newValue) -> newValue));
 
 
@@ -218,22 +227,22 @@ public class SpotifyServiceImpl implements SpotifyService {
 
         if(StringUtils.isNotBlank(username)) {
 
-            List<UserSong> userSongs = userService.fetchLikedSongsByUsername(username);
+            List<Track> tracks = songService.fetchLikedSongsByUsername(username);
 
-            List<String> userLikedSongIds = userSongs.stream().map(UserSong::getTrackId).toList();
-
-
-            List<UserAlbum> userAlbums = userService.fetchLikedAlbumsByUsername(username);
-
-            List<String> userLikedAlbumIds = userAlbums.stream().map(UserAlbum::getAlbumId).toList();
+            List<String> userLikedSongIds = tracks.stream().map(Track::getId).toList();
 
 
-            List<Collection> collectionList = collectionService.fetchAllCollectionsByUsername(username);
+            List<Album> albums = albumService.fetchLikedAlbumsByUsername(username);
+
+            List<String> userLikedAlbumIds = albums.stream().map(Album::getId).toList();
+
+
+            List<CollectionDto> collectionList = collectionService.fetchAllCollectionsItemListByUsername(username);
 
             Map<String, String> collectionMap = collectionList.stream()
                     .collect(Collectors.toMap(
-                            Collection::getSpotifyId,
-                            Collection::getName,
+                            CollectionDto::getId,
+                            CollectionDto::getName,
                             (oldValue, newValue) -> newValue));
 
 

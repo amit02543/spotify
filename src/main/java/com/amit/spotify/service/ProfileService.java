@@ -16,4 +16,6 @@ public interface ProfileService {
 
     byte[] fetchProfileImageByUsername(String username);
 
+    String deleteProfileImageByUsername(String username);
+
 }

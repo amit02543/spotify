@@ -7,8 +7,16 @@ import java.util.List;
 
 public interface CollectionService {
 
-    String saveCollection(CollectionDto collectionDto);
+    List<CollectionDto> fetchAllCollections();
 
-    List<Collection> fetchAllCollectionsByUsername(String username);
+    CollectionDto addNewCollection(CollectionDto collectionDto);
+
+    List<CollectionDto> fetchAllCollectionsItemListByUsername(String username);
+
+    List<CollectionDto> fetchCollectionItemListByNameAndUsername(String collectionName, String username);
+
+    String deleteCollectionItemListByNameAndUsername(String collectionName, String username);
+
+    String deleteCollectionItemByNameUsernameAndSpotifyId(String collectionName, String username, String id);
 
 }

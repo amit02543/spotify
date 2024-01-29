@@ -1,31 +1,25 @@
 package com.amit.spotify.controller;
 
+import com.amit.spotify.constants.SpotifyConstants;
 import com.amit.spotify.dto.CollectionDto;
-import com.amit.spotify.entity.Collection;
-import com.amit.spotify.exception.SpotifyException;
 import com.amit.spotify.service.CollectionService;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
-import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.List;
 
-@Tag(name = "Collection Controller", description = "Collection controller contains APIs for collection management")
-@RequestMapping("/v1")
+@Tag(name = "Collection Controller", description = "Collection controller manages APIs for collection")
+@RequestMapping("/v1/collection-management/collections")
 @RestController
 @CrossOrigin
 @Slf4j
@@ -35,94 +29,98 @@ public class CollectionController {
     @Autowired
     private CollectionService collectionService;
 
-    @Autowired
-    private ObjectMapper objectMapper;
-
 
     @RequestMapping(
-            value = "/{username}/collections",
+            value = SpotifyConstants.EMPTY_STR,
             method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE
     )
-    public ResponseEntity<String> fetchAllCollectionsByUsername(@PathVariable String username) {
+    public ResponseEntity<List<CollectionDto>> fetchAllCollections() {
 
-        try {
+        List<CollectionDto> collectionList = collectionService.fetchAllCollections();
 
-            List<Collection> userCollection = collectionService.fetchAllCollectionsByUsername(username);
-
-
-            return new ResponseEntity<>(objectMapper.writeValueAsString(userCollection), HttpStatus.OK);
-        } catch(SpotifyException e) {
-
-            JSONObject errorJsonObject = new JSONObject();
-            errorJsonObject.put("message", e.getMessage());
-            errorJsonObject.put("statusCode", e.getStatusCode().value());
-
-            return new ResponseEntity<>(errorJsonObject.toString(), e.getStatusCode());
-        } catch (JsonProcessingException e) {
-
-            JSONObject errorJsonObject = new JSONObject();
-            errorJsonObject.put("message", "Something went wrong!");
-            errorJsonObject.put("statusCode", HttpStatus.INTERNAL_SERVER_ERROR.value());
-
-            return new ResponseEntity<>(errorJsonObject.toString(), HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-
-
+        return new ResponseEntity<>(collectionList, HttpStatus.OK);
     }
 
 
     @RequestMapping(
-            value = "/collections",
+            value = SpotifyConstants.EMPTY_STR,
             method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_VALUE
     )
-    public ResponseEntity<String> saveCollection(@RequestBody CollectionDto collectionDto) {
-        log.info("Adding new collection to database: {}", collectionDto);
+    public ResponseEntity<CollectionDto> addNewCollection(@RequestBody CollectionDto collectionDto) {
 
-        try {
+        CollectionDto collection = collectionService.addNewCollection(collectionDto);
 
-            String message = collectionService.saveCollection(collectionDto);
-
-
-            JSONObject responseObject = new JSONObject();
-            responseObject.put("message", message);
-            responseObject.put("statusCode", HttpStatus.OK.value());
-
-
-            return new ResponseEntity<>(responseObject.toString(), HttpStatus.OK);
-        } catch(SpotifyException e) {
-
-            JSONObject errorJsonObject = new JSONObject();
-            errorJsonObject.put("message", e.getMessage());
-            errorJsonObject.put("statusCode", e.getStatusCode().value());
-
-            return new ResponseEntity<>(errorJsonObject.toString(), e.getStatusCode());
-        }
-
-
+        return new ResponseEntity<>(collection, HttpStatus.OK);
     }
 
 
-    @ExceptionHandler(SQLIntegrityConstraintViolationException.class)
-    public ResponseEntity<String> handleSQLIntegrityConstraintViolationException(SQLIntegrityConstraintViolationException e) {
-        log.error("Unable to save user collection data: {}", e.getMessage());
+    @RequestMapping(
+            value = SpotifyConstants.EMPTY_STR,
+            params = "filter=byUsername",
+            method = RequestMethod.GET,
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    public ResponseEntity<List<CollectionDto>> fetchAllCollectionsItemListByUsername(
+            @RequestParam("username") String username) {
 
-        if(e.getMessage().startsWith("Duplicate entry ")) {
+        List<CollectionDto> collectionList =
+                collectionService.fetchAllCollectionsItemListByUsername(username);
 
-            JSONObject errorJsonObject = new JSONObject();
-            errorJsonObject.put("message", "Album/song already present in user's collection");
-            errorJsonObject.put("statusCode", HttpStatus.UNPROCESSABLE_ENTITY.value());
-
-            return new ResponseEntity<>(errorJsonObject.toString(), HttpStatus.UNPROCESSABLE_ENTITY);
-        }
-
-        JSONObject errorJsonObject = new JSONObject();
-        errorJsonObject.put("message", "Something went wrong!");
-        errorJsonObject.put("statusCode", HttpStatus.INTERNAL_SERVER_ERROR.value());
-
-        return new ResponseEntity<>(errorJsonObject.toString(), HttpStatus.INTERNAL_SERVER_ERROR);
+        return new ResponseEntity<>(collectionList, HttpStatus.OK);
     }
+
+
+    @RequestMapping(
+            value = SpotifyConstants.EMPTY_STR,
+            params = "filter=byNameAndUsername",
+            method = RequestMethod.GET,
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    public ResponseEntity<List<CollectionDto>> fetchCollectionItemListByNameAndUsername(
+            @RequestParam("name") String collectionName, @RequestParam("username") String username) {
+
+        List<CollectionDto> collectionList =
+                collectionService.fetchCollectionItemListByNameAndUsername(collectionName, username);
+
+        return new ResponseEntity<>(collectionList, HttpStatus.OK);
+    }
+
+
+    @RequestMapping(
+            value = SpotifyConstants.EMPTY_STR,
+            params = "filter=byNameAndUsername",
+            method = RequestMethod.DELETE,
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    public ResponseEntity<String> deleteCollectionItemListByNameAndUsername(
+            @RequestParam("name") String collectionName, @RequestParam("username") String username
+    ) {
+
+        String message =
+                collectionService.deleteCollectionItemListByNameAndUsername(collectionName, username);
+
+        return new ResponseEntity<>(message, HttpStatus.OK);
+    }
+
+
+    @RequestMapping(
+            value = SpotifyConstants.EMPTY_STR,
+            params = "filter=byNameAndUsernameAndId",
+            method = RequestMethod.DELETE,
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    public ResponseEntity<String> deleteCollectionItemByNameUsernameAndSpotifyId(
+            @RequestParam("name") String collectionName, @RequestParam("username") String username, @RequestParam("id") String id
+    ) {
+
+        String message =
+                collectionService.deleteCollectionItemByNameUsernameAndSpotifyId(collectionName, username, id);
+
+        return new ResponseEntity<>(message, HttpStatus.OK);
+    }
+
 
 
 

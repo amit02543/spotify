@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface UserCollectionRepository extends JpaRepository<UserCollection, String> {
@@ -14,6 +15,6 @@ public interface UserCollectionRepository extends JpaRepository<UserCollection, 
     List<UserCollection> findAllByUsername(String username);
 
     @Query(value = "SELECT * FROM user_collection u WHERE u.username = :username and u.name = :name", nativeQuery = true)
-    UserCollection fetchByNameAndUsername(String name, String username);
+    Optional<UserCollection> fetchByNameAndUsername(String name, String username);
 
 }
