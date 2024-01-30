@@ -52,7 +52,7 @@ public class CollectionController {
 
         CollectionDto collection = collectionService.addNewCollection(collectionDto);
 
-        return new ResponseEntity<>(collection, HttpStatus.OK);
+        return new ResponseEntity<>(collection, HttpStatus.CREATED);
     }
 
 

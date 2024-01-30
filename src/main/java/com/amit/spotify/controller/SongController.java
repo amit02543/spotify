@@ -55,7 +55,7 @@ public class SongController {
 
         Track song = songService.addLikedSongToUser(username, track);
 
-        return new ResponseEntity<>(track, HttpStatus.OK);
+        return new ResponseEntity<>(track, HttpStatus.CREATED);
     }
 
 

@@ -52,12 +52,14 @@ public class CollectionServiceImpl implements CollectionService {
                     SpotifyMessageConstants.COLLECTION_NAME_NULL_MESSAGE,
                     HttpStatus.BAD_REQUEST
             );
-        } else if(StringUtils.isBlank(collectionDto.getAlbum())) {
+        } else if(SpotifyConstants.ALBUM.equals(collectionDto.getType())
+                && StringUtils.isBlank(collectionDto.getAlbum())) {
             throw new SpotifyException(
                     SpotifyMessageConstants.ALBUM_NAME_NULL_MESSAGE,
                     HttpStatus.BAD_REQUEST
             );
-        } else if(StringUtils.isBlank(collectionDto.getTitle())) {
+        } else if(SpotifyConstants.TRACK.equals(collectionDto.getType())
+                && StringUtils.isBlank(collectionDto.getTitle())) {
             throw new SpotifyException(
                     SpotifyMessageConstants.TRACK_TITLE_NULL_MESSAGE,
                     HttpStatus.BAD_REQUEST
@@ -66,6 +68,8 @@ public class CollectionServiceImpl implements CollectionService {
 
 
         Collection collection = collectionDtoToCollection(collectionDto);
+
+        collectionRepository.save(collection);
 
 
         UserCollection userCollection = new UserCollection();

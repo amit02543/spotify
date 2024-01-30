@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @Tag(name = "Auth Controller", description = "Auth controller contains APIs for user authentication")
 @RestController
-@RequestMapping("/v1/auth/")
+@RequestMapping("/v1/auth-management/")
 @CrossOrigin
 @Slf4j
 public class AuthController {

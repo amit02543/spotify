@@ -55,7 +55,7 @@ public class AlbumController {
 
         Album savedAlbum = albumService.addLikedAlbumToUser(username, album);
 
-        return new ResponseEntity<>(savedAlbum, HttpStatus.OK);
+        return new ResponseEntity<>(savedAlbum, HttpStatus.CREATED);
     }
 
 

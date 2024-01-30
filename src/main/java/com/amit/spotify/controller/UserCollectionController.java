@@ -59,7 +59,7 @@ public class UserCollectionController {
 
         UserCollection userCollection = userCollectionService.addUserCollection(userCollectionDto);
 
-        return new ResponseEntity<>(userCollection, HttpStatus.OK);
+        return new ResponseEntity<>(userCollection, HttpStatus.CREATED);
     }
 
 
