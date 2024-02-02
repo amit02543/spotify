@@ -41,6 +41,8 @@ public class SpotifyConstants {
 
     public static final String IMAGE_SIGNATURE = "eager=%s&public_id=%s&timestamp=%s%s";
 
+    public static final String DELETE_IMAGE_SIGNATURE = "public_id=%s&timestamp=%s%s";
+
     public static final String FILE = "file";
 
     public static final String FORM_DATA = "form-data";

@@ -2,11 +2,14 @@ package com.amit.spotify.service.impl;
 
 import com.amit.spotify.constants.SpotifyMessageConstants;
 import com.amit.spotify.dto.UserCollectionDto;
+import com.amit.spotify.entity.Collection;
 import com.amit.spotify.exception.SpotifyException;
 import com.amit.spotify.model.UserCollection;
+import com.amit.spotify.repository.CollectionRepository;
 import com.amit.spotify.repository.UserCollectionRepository;
 import com.amit.spotify.service.UserCollectionService;
 import com.amit.spotify.util.SpotifyImageUploadUtility;
+import com.amit.spotify.util.SpotifyUtility;
 import jakarta.transaction.Transactional;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,11 +27,20 @@ public class UserCollectionServiceImpl implements UserCollectionService {
 
 
     @Autowired
+    private CollectionRepository collectionRepository;
+
+
+    @Autowired
     private UserCollectionRepository userCollectionRepository;
 
 
     @Autowired
     private SpotifyImageUploadUtility spotifyImageUploadUtility;
+
+
+    @Autowired
+    private SpotifyUtility spotifyUtility;
+
 
 
     @Override
@@ -105,6 +117,13 @@ public class UserCollectionServiceImpl implements UserCollectionService {
     @Transactional
     public String deleteCollectionByUsernameAndName(String username, String collectionName) {
 
+        List<Collection> collectionList =
+                collectionRepository.fetchByUsernameAndCollectionName(username, collectionName);
+
+        for(Collection collection: collectionList) {
+            collectionRepository.deleteById(collection.getId());
+        }
+
         com.amit.spotify.entity.UserCollection userCollectionEntity = getUserCollection(username, collectionName);
 
         userCollectionRepository.deleteById(userCollectionEntity.getId());
@@ -134,11 +153,18 @@ public class UserCollectionServiceImpl implements UserCollectionService {
     public String deleteCollectionImageByUsernameAndName(String username, String collectionName) {
 
         com.amit.spotify.entity.UserCollection userCollectionEntity = getUserCollection(username, collectionName);
+
+        String url = userCollectionEntity.getImageUrl();
+
         userCollectionEntity.setImageUrl(null);
 
         //TODO: Delete image from cloudinary
 
         userCollectionRepository.save(userCollectionEntity);
+
+        String publicId = spotifyUtility.extractPublicIdFromUrl(url);
+
+        spotifyImageUploadUtility.removeImage(publicId);
 
 
         return collectionName + " image is removed successfully";

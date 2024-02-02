@@ -144,4 +144,58 @@ public class SpotifyImageUploadUtility {
     }
 
 
+    public String removeImage(String id) {
+
+        String url = String.format(cloudinaryConfig.getImageUrl().replace("upload", "destroy"), cloudinaryConfig.getCloudName());
+
+        long instant = LocalDateTime.now().atZone(ZoneId.of(SpotifyConstants.UTC)).toInstant().getEpochSecond();
+        String timestamp = String.valueOf(instant);
+
+
+        String signatureString = String.format(SpotifyConstants.DELETE_IMAGE_SIGNATURE, id, timestamp, cloudinaryConfig.getSecret());
+
+
+        String signature;
+
+        try {
+            signature = spotifyUtility.generateSHAHexValue(signatureString);
+        } catch (SpotifyException e) {
+            throw new SpotifyException(
+                    SpotifyMessageConstants.SHA_NOT_VALID_MESSAGE,
+                    HttpStatus.INTERNAL_SERVER_ERROR
+            );
+        }
+
+
+
+        MultiValueMap<String, Object> requestBody = new LinkedMultiValueMap<>();
+        requestBody.put(SpotifyConstants.API_KEY, List.of(cloudinaryConfig.getKey()));
+        requestBody.put(SpotifyConstants.PUBLIC_ID, List.of(id));
+        requestBody.put(SpotifyConstants.TIMESTAMP, List.of(timestamp));
+        requestBody.put(SpotifyConstants.SIGNATURE, List.of(signature));
+
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.MULTIPART_FORM_DATA);
+
+
+        HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(requestBody, headers);
+
+
+        ResponseEntity<String> responseEntity = restTemplate.exchange(url, HttpMethod.POST, requestEntity, String.class);
+
+
+        if(HttpStatus.OK != responseEntity.getStatusCode()) {
+            throw new SpotifyException(
+                    String.format(SpotifyMessageConstants.IMAGE_DELETE_FAILED_MESSAGE, responseEntity.getStatusCode(),
+                            responseEntity.getBody()),
+                    HttpStatus.INTERNAL_SERVER_ERROR
+            );
+        }
+
+        return "Image deleted successfully from cloudinary storage";
+    }
+
+
+
 }
