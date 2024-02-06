@@ -44,6 +44,8 @@ public class SpotifyMessageConstants {
 
     public static final String IMAGE_UPLOAD_FAILED_MESSAGE = "Collection image upload failed with status code %s with message: %s";
 
+    public static final String IMAGE_DELETE_FAILED_MESSAGE = "Image delete failed with status code %s with message: %s";
+
     public static final String RESPONSE_BODY_NULL_MESSAGE = "Response body is null";
 
     public static final String FILE_NOT_FOUND_ERROR_MESSAGE = "Unable to locate file:  %s";
@@ -55,5 +57,7 @@ public class SpotifyMessageConstants {
     public static final String DUPLICATE_ENTRY_ERROR_MESSAGE = "Unable to process duplicate entry";
 
     public static final String IMAGE_DB_SAVE_ERROR_MESSAGE = "Unable to save image to database";
+
+    public static final String IMAGE_URL_EMPTY_MESSAGE = "Image URL is empty";
 
 }

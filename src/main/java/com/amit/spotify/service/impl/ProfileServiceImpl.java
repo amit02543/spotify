@@ -124,10 +124,17 @@ public class ProfileServiceImpl implements ProfileService {
     public String deleteProfileImageByUsername(String username) {
 
         User user = getUserByUsername(username);
+
+        String profileUrl = user.getProfileUrl();
+
         user.setProfileUrl(null);
 
         userRepository.save(user);
 
+
+        String publicId = spotifyUtility.extractPublicIdFromUrl(profileUrl);
+
+        spotifyImageUploadUtility.removeImage(publicId);
 
         return "Profile image deleted successfully";
     }

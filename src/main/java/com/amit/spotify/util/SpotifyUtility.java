@@ -1,9 +1,11 @@
 package com.amit.spotify.util;
 
 import com.amit.spotify.constants.SpotifyConstants;
+import com.amit.spotify.constants.SpotifyMessageConstants;
 import com.amit.spotify.dto.UserDto;
 import com.amit.spotify.entity.User;
 import com.amit.spotify.exception.SpotifyException;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Component;
@@ -71,6 +73,20 @@ public class SpotifyUtility {
                 .filter(status -> status.value() == statusCode.value())
                 .findAny()
                 .orElse(HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+
+    public String extractPublicIdFromUrl(String url) {
+
+        if(StringUtils.isBlank(url)) {
+            throw new SpotifyException(
+                    SpotifyMessageConstants.IMAGE_URL_EMPTY_MESSAGE,
+                    HttpStatus.UNPROCESSABLE_ENTITY
+            );
+        }
+
+
+        return url.substring(url.lastIndexOf("/") + 1, url.lastIndexOf("."));
     }
 
 
